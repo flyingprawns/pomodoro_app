@@ -26,7 +26,7 @@ def start_timer():
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- #
 def countdown(count):
     minutes = floor(count / 60)
-    seconds = count % 60
+    seconds = "%02d" % (count % 60)
     time_display = f"{minutes}:{seconds}"
     canvas.itemconfig(timer_text, text=time_display)
     if count > 0:
