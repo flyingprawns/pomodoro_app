@@ -47,10 +47,10 @@ def start_timer():
     global taking_break
     if taking_break:
         header_label.config(text="Break!", fg=RED)
-        countdown(3)
+        countdown(WORK_MIN*60)
     else:
         header_label.config(text="Work!", fg=GREEN)
-        countdown(2)
+        countdown(BREAK_MIN*60)
 
 
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- #
@@ -69,6 +69,10 @@ def countdown(count):
         timer = window.after(1000, countdown, count-1)
     # Countdown over!
     else:
+        # Make window pop out
+        window.lift()
+        window.attributes('-topmost', True)
+        window.after_idle(window.attributes, '-topmost', False)
         # Increment pomodoro count if you were working
         global taking_break
         if not taking_break:
