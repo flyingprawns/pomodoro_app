@@ -29,33 +29,34 @@ def start_timer():
     global taking_break
     if taking_break:
         header_label.config(text="Break!", fg=RED)
-        countdown(BREAK_MIN)
+        countdown(3)
     else:
         header_label.config(text="Work!", fg=GREEN)
-        countdown(WORK_MIN)
+        countdown(2)
     reset_timer()
 
 
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- #
 def countdown(count):
+    # Display countdown
     minutes = floor(count / 60)
     seconds = "%02d" % (count % 60)
     time_display = f"{minutes}:{seconds}"
     canvas.itemconfig(timer_text, text=time_display)
+    # Keep counting
     if count >= 0:
         window.after(1000, countdown, count-1)
+    # Countdown over!
     else:
-        # Go from taking break -> working, or working -> taking break. Then start timer.
         global taking_break
+        if not taking_break:
+            # Increment pomodoro count
+            pomodoros_completed.set(pomodoros_completed.get() + 1)
+        # "Flip" the break status
         taking_break = not taking_break
+        # Start timer after 3 seconds
         window.after(3000)
         start_timer()
-
-
-# ------------------------------ POMODORO TRACKER ------------------------------- #
-def tracker_spinbox_used():
-    pass
-
 
 # ---------------------------- UI SETUP ------------------------------- #
 # Main window
@@ -83,7 +84,8 @@ start_button = Button(text="Reset", font=(FONT_NAME_BUTTONS, 15), command=reset_
 start_button.grid(column=3, row=3, pady=5)
 
 # Pomodoro count tracker
-tracker_spinbox = Spinbox(from_=0, to=10, width=5, command=tracker_spinbox_used)
+pomodoros_completed = IntVar(value=0)
+tracker_spinbox = Spinbox(from_=0, to=10, width=5, textvariable=pomodoros_completed)
 tracker_spinbox.grid(column=2, row=4, pady=20)
 
 # ----------------------- KEEP GUI WINDOW OPEN ------------------------ #
