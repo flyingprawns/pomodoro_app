@@ -47,10 +47,10 @@ def start_timer():
     global taking_break
     if taking_break:
         header_label.config(text="Break!", fg=RED)
-        countdown(WORK_MIN*60)
+        countdown(BREAK_MIN*60)
     else:
         header_label.config(text="Work!", fg=GREEN)
-        countdown(BREAK_MIN*60)
+        countdown(WORK_MIN*60)
 
 
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- #
