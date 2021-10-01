@@ -9,18 +9,31 @@ YELLOW = "#f7f5dd"
 FONT_NAME_TIMER = "Courier"
 FONT_NAME_BUTTONS = "Arial"
 WORK_MIN = 25
-SHORT_BREAK_MIN = 5
-LONG_BREAK_MIN = 20
+BREAK_MIN = 5
+
+# --------------------------- GLOBAL VARIABLES ---------------------------- #
+taking_break = False
 
 
 # ---------------------------- TIMER RESET ------------------------------- #
 def reset_timer():
-    pass
+    global taking_break
+    if taking_break:
+        canvas.itemconfig(timer_text, text="5:00")
+    else:
+        canvas.itemconfig(timer_text, text="25:00")
 
 
-# ---------------------------- TIMER MECHANISM ------------------------------- # 
+# ---------------------------- TIMER MECHANISM ------------------------------- #
 def start_timer():
-    countdown(WORK_MIN*60)
+    global taking_break
+    if taking_break:
+        header_label.config(text="Break!", fg=RED)
+        countdown(BREAK_MIN)
+    else:
+        header_label.config(text="Work!", fg=GREEN)
+        countdown(WORK_MIN)
+    reset_timer()
 
 
 # ---------------------------- COUNTDOWN MECHANISM ------------------------------- #
@@ -29,8 +42,14 @@ def countdown(count):
     seconds = "%02d" % (count % 60)
     time_display = f"{minutes}:{seconds}"
     canvas.itemconfig(timer_text, text=time_display)
-    if count > 0:
+    if count >= 0:
         window.after(1000, countdown, count-1)
+    else:
+        # Go from taking break -> working, or working -> taking break. Then start timer.
+        global taking_break
+        taking_break = not taking_break
+        window.after(3000)
+        start_timer()
 
 
 # ------------------------------ POMODORO TRACKER ------------------------------- #
@@ -52,8 +71,8 @@ timer_text = canvas.create_text(119, 152, text="0:00", fill="white", font=(FONT_
 canvas.grid(row=2, column=2)
 
 # "Timer" text
-timer_label = Label(text="Timer", font=(FONT_NAME_BUTTONS, 43, "bold"), bg=YELLOW, fg=GREEN)
-timer_label.grid(row=1, column=2)
+header_label = Label(text="Timer", font=(FONT_NAME_BUTTONS, 43, "bold"), bg=YELLOW, fg=GREEN)
+header_label.grid(row=1, column=2)
 
 # "Start" Button
 start_button = Button(text="Start", font=(FONT_NAME_BUTTONS, 15), command=start_timer)
